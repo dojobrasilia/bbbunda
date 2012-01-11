@@ -1,5 +1,6 @@
 require 'tweetstream'
 require 'pp'
+require 'mongo'
 
 TweetStream.configure do |config|
   config.consumer_key = '8lRowQsSQ9Av78rYvlwzYw'
@@ -10,7 +11,11 @@ TweetStream.configure do |config|
   config.parser   = :yajl
 end
 
+db = Mongo::Connection.new.db("bbbunda")
+count = 0
+
 TweetStream::Client.new.track('bbb') do |status|
-  #puts "[#{status.user.screen_name}] #{status.text}"
-  pp status
+  puts "#{count}. [#{status.user.screen_name}] #{status.text}"
+  db['tweets'].insert(status)
+  count += 1
 end
